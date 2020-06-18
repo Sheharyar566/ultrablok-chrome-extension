@@ -1,3 +1,5 @@
+/******************************************************************************************************************** */
+/********************************** Primary settings for adBlocker ************************************************** */
 /* Creating a list of urls that need to be blocked by the adblocker */
 let urlFilters: chrome.webRequest.RequestFilter = {
     urls: [
@@ -24,9 +26,9 @@ let urlFilters: chrome.webRequest.RequestFilter = {
         '*://*.servebom.com/*',
         '*://*.casalemedia.com/*',
         '*://*.advertising.com/*',
-        '*://*.moatads.com/*'
+        '*://*.moatads.com/*',
     ]
-}
+};
 
 /* Adding the "Blocking" capability to the extension */
 /* Don't know much about this extra info array...  */
@@ -35,30 +37,54 @@ let extraInfo: string[] = [
     'blocking'
 ]
 
+/******************************************************************************************************************** */
+/*********************************************** Dictionaries to keep track of data ********************************* */
+
 /* Creating a dictionary to hold values for each tab */
-let dictionary: Map<number, number> = new Map();
+let countDictionary: Map<number, number> = new Map();
+
+/* Creating a dictionary to hold urls for each tab */
+let urlDictionary: Map<number, string> = new Map();
+
+/******************************************************************************************************************** */
+/************************************************* Several other url lists ****************************************** */
+/* Creating a whitelist for the pages that are allowed by the user to show ads */
+let whitelist: string[] = [];
+
+/******************************************************************************************************************** */
+/************************************************ Respective event listeners **************************************** */
 
 /* Setting up an event listener before a request is initiated */
 /* This lets us block certain requests (based on the list above) even before they begin */
-chrome.webRequest.onBeforeRequest.addListener((details: chrome.webRequest.WebRequestBodyDetails): chrome.webRequest.BlockingResponse => {
-    /* Have to check if the entry exists in the map before incrementing it */
-    /* In case, it doesn't exist, then set it to 1 */
-    /*  cause of course this event runs if and only if the request to an ad network is detected */
-    /* Otherwise, just increment it */
-    if(dictionary.get(details.tabId) === undefined) {
-        dictionary.set(details.tabId, 1);
+chrome.webRequest.onBeforeRequest.addListener((details: chrome.webRequest.WebRequestBodyDetails): chrome.webRequest.BlockingResponse => {    
+    /* Check if the tab's url (not the ad's url) is present in the whitelist */
+    /* If it is present, then stop the ad blocking process */
+    if(whitelist.includes(<string>urlDictionary.get(details.tabId))) {
+        /* Returning a Blocking response object that sets cancel to true according to the urls list */
+        /* False if don't wanna block */
+        return { cancel: false };
     } else {
-        dictionary.set(details.tabId, <number>dictionary.get(details.tabId) + 1);
+        /* Have to check if the entry exists in the map before incrementing it */
+        /* In case, it doesn't exist, then set it to 1 */
+        /*  cause of course this event runs if and only if the request to an ad network is detected */
+        /* Otherwise, just increment it */
+        if(countDictionary.get(details.tabId) === undefined) {
+            countDictionary.set(details.tabId, 1);
+        } else {
+            countDictionary.set(details.tabId, <number>countDictionary.get(details.tabId) + 1);
+        }
+
+        /* Changing the value of the extension icon badge text */
+        chrome.browserAction.setBadgeText({
+            text: (<number>countDictionary.get(details.tabId)).toString(),
+            tabId: details.tabId
+        });
+        
+        /* Returning a Blocking response object that sets cancel to true according to the urls list */
+        /* True if blocking */
+        return { cancel: true };
     }
-
-
-    /* Changing the value of the extension icon badge text */
-    chrome.browserAction.setBadgeText({
-        text: (<number>dictionary.get(details.tabId)).toString(),
-        tabId: details.tabId
-    });
-
-    /* Returning a Blocking response object that sets cancel to true according to the urls list */
+    
     return { cancel: true };
 }, urlFilters, extraInfo);
 
@@ -68,7 +94,14 @@ chrome.webRequest.onBeforeRequest.addListener((details: chrome.webRequest.WebReq
 /* A few ads would possibly get loaded (not confirm) */
 chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab): void => {
     if(changeInfo.status === 'loading') {
-        dictionary.set(tabId, 0);
+        /* The count resetting functionality */
+        countDictionary.set(tabId, 0);
+
+        /* Extracting the domain from the url provided by the tab object */
+        /* We can compare the obtained domain to block or unblock ads with */
+        /* respective to the whitelist url */
+        let domain: string = <string>tab.url?.split('/')[2];
+        urlDictionary.set(tabId, domain);
     }
 });
 
@@ -76,5 +109,6 @@ chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabCha
 /* This helps in preveting the map from over inflating even if the tabs were closed */
 /* Cause if not deleted, the ad count would have stayed in the map, til the chrome window isn't closed */
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo): void => {
-    dictionary.delete(tabId);
+    countDictionary.delete(tabId);
+    urlDictionary.delete(tabId);
 });
