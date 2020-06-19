@@ -85,7 +85,7 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
 /* So I decided to reset the count while the page starts loading, cause till the complete staage reaches */
 /* A few ads would possibly get loaded (not confirm) */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    var _a;
+    var _a, _b;
     if (changeInfo.status === 'loading') {
         /* The count resetting functionality */
         countDictionary.set(tabId, 0);
@@ -94,6 +94,32 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         /* respective to the whitelist url */
         let domain = (_a = tab.url) === null || _a === void 0 ? void 0 : _a.split('/')[2];
         urlDictionary.set(tabId, domain);
+        /* In case if the url is present in the whitelist (i.e. user disabled sites)*/
+        /* Then change the icon to show the inactivity status */
+        if (whitelist.includes((_b = tab.url) === null || _b === void 0 ? void 0 : _b.split('/')[2])) {
+            /* Changing the browser action icon to inactive red style */
+            chrome.browserAction.setIcon({
+                path: {
+                    "16": "../../assets/icons/inactive16.png",
+                    "24": "../../assets/icons/inactive24.png",
+                    "32": "../../assets/icons/inactive32.png",
+                    "64": "../../assets/icons/inactive64.png",
+                    "128": "../../assets/icons/inactive128.png"
+                }
+            });
+        }
+        else {
+            /* Changing the browser action icon to active green style */
+            chrome.browserAction.setIcon({
+                path: {
+                    "16": "../../assets/icons/icon16.png",
+                    "24": "../../assets/icons/icon24.png",
+                    "32": "../../assets/icons/icon32.png",
+                    "64": "../../assets/icons/icon64.png",
+                    "128": "../../assets/icons/icon128.png"
+                }
+            });
+        }
     }
 });
 /* Deleting the tab's ad count entry in case if the tab is closed */
@@ -102,4 +128,38 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
     countDictionary.delete(tabId);
     urlDictionary.delete(tabId);
+});
+/* Since the activity status of the extension changes between different tags */
+/* i.e. user keeps it active on one tab, while disables on the other */
+/* So, we need to check if the url is in the whitelist set by the user */
+/* And this needs to be checked everytime an active tab is changed */
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    /* Getting the url value from the urlDictionary which keeps track of the active urls */
+    let url = urlDictionary.get(activeInfo.tabId);
+    /* In case if the url is present in the whitelist (i.e. user disabled sites)*/
+    /* Then change the icon to show the inactivity status */
+    if (url && whitelist.includes(url)) {
+        /* Changing the browser action icon to inactive red style */
+        chrome.browserAction.setIcon({
+            path: {
+                "16": "../../assets/icons/inactive16.png",
+                "24": "../../assets/icons/inactive24.png",
+                "32": "../../assets/icons/inactive32.png",
+                "64": "../../assets/icons/inactive64.png",
+                "128": "../../assets/icons/inactive128.png"
+            }
+        });
+    }
+    else {
+        /* Changing the browser action icon to active green style */
+        chrome.browserAction.setIcon({
+            path: {
+                "16": "../../assets/icons/icon16.png",
+                "24": "../../assets/icons/icon24.png",
+                "32": "../../assets/icons/icon32.png",
+                "64": "../../assets/icons/icon64.png",
+                "128": "../../assets/icons/icon128.png"
+            }
+        });
+    }
 });

@@ -53,7 +53,6 @@ let whitelist: string[] = [];
 
 /******************************************************************************************************************** */
 /************************************************ Respective event listeners **************************************** */
-
 /* Setting up an event listener before a request is initiated */
 /* This lets us block certain requests (based on the list above) even before they begin */
 chrome.webRequest.onBeforeRequest.addListener((details: chrome.webRequest.WebRequestBodyDetails): chrome.webRequest.BlockingResponse => {    
@@ -73,7 +72,7 @@ chrome.webRequest.onBeforeRequest.addListener((details: chrome.webRequest.WebReq
         } else {
             countDictionary.set(details.tabId, <number>countDictionary.get(details.tabId) + 1);
         }
-
+        
         /* Changing the value of the extension icon badge text */
         chrome.browserAction.setBadgeText({
             text: (<number>countDictionary.get(details.tabId)).toString(),
@@ -96,12 +95,38 @@ chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabCha
     if(changeInfo.status === 'loading') {
         /* The count resetting functionality */
         countDictionary.set(tabId, 0);
-
+        
         /* Extracting the domain from the url provided by the tab object */
         /* We can compare the obtained domain to block or unblock ads with */
         /* respective to the whitelist url */
         let domain: string = <string>tab.url?.split('/')[2];
         urlDictionary.set(tabId, domain);
+        
+        /* In case if the url is present in the whitelist (i.e. user disabled sites)*/
+        /* Then change the icon to show the inactivity status */
+        if(whitelist.includes(<string>tab.url?.split('/')[2])) {
+            /* Changing the browser action icon to inactive red style */
+            chrome.browserAction.setIcon({
+                path: {
+                    "16": "../../assets/icons/inactive16.png",
+                    "24": "../../assets/icons/inactive24.png",
+                    "32": "../../assets/icons/inactive32.png",
+                    "64": "../../assets/icons/inactive64.png",
+                    "128": "../../assets/icons/inactive128.png"
+                }
+            });
+        } else {
+            /* Changing the browser action icon to active green style */
+            chrome.browserAction.setIcon({
+                path: {
+                    "16": "../../assets/icons/icon16.png",
+                    "24": "../../assets/icons/icon24.png",
+                    "32": "../../assets/icons/icon32.png",
+                    "64": "../../assets/icons/icon64.png",
+                    "128": "../../assets/icons/icon128.png"
+                }
+            });
+        }
     }
 });
 
@@ -111,4 +136,39 @@ chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabCha
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo): void => {
     countDictionary.delete(tabId);
     urlDictionary.delete(tabId);
+});
+
+/* Since the activity status of the extension changes between different tags */
+/* i.e. user keeps it active on one tab, while disables on the other */
+/* So, we need to check if the url is in the whitelist set by the user */
+/* And this needs to be checked everytime an active tab is changed */
+chrome.tabs.onActivated.addListener((activeInfo: chrome.tabs.TabActiveInfo): void => {
+    /* Getting the url value from the urlDictionary which keeps track of the active urls */
+    let url: string | undefined = urlDictionary.get(activeInfo.tabId);
+    
+    /* In case if the url is present in the whitelist (i.e. user disabled sites)*/
+    /* Then change the icon to show the inactivity status */
+    if(url && whitelist.includes(url)) {
+        /* Changing the browser action icon to inactive red style */
+        chrome.browserAction.setIcon({
+            path: {
+                "16": "../../assets/icons/inactive16.png",
+                "24": "../../assets/icons/inactive24.png",
+                "32": "../../assets/icons/inactive32.png",
+                "64": "../../assets/icons/inactive64.png",
+                "128": "../../assets/icons/inactive128.png"
+            }
+        });
+    } else {
+        /* Changing the browser action icon to active green style */
+        chrome.browserAction.setIcon({
+            path: {
+                "16": "../../assets/icons/icon16.png",
+                "24": "../../assets/icons/icon24.png",
+                "32": "../../assets/icons/icon32.png",
+                "64": "../../assets/icons/icon64.png",
+                "128": "../../assets/icons/icon128.png"
+            }
+        });
+    }
 });
