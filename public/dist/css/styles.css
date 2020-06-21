@@ -1,8 +1,24 @@
+/*******************************************************************************************************/
 /* Global Styles */
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+}
+
+:root {
+    /* Variables */
+    --primaryColor: rgb(53, 213, 211, 1);
+    --secondaryColor: rgb(34, 208, 203, 1);
+    --switchBgColor: rgb(53, 213, 211, 0.1);
+
+    --inactivePrimaryColor: rgb(252, 56, 56);
+    --inactiveSecondaryColor: rgb(238, 61, 51);
+    --inactiveSwitchBgColor: rgb(252, 56, 56, 0.1);
+
+    --borderLightColor: rgba(150, 150, 150, 0.2);
+
+    --toggleTransitionTime: 0.9s;
 }
 
 html, body {
@@ -12,30 +28,105 @@ html, body {
 
 body {
     font-size: 16px;
+    font-family: 'Roboto';
 }
 
-/* Header styles */
-nav {
-    height: 50px;
-    padding: 3px 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: nowrap;
+/*******************************************************************************************************/
+/* Page styles */
+#home {
+    height: 100%;
 }
 
-nav img {
-    display: inline-block;
-    margin-right: 5px;
-}
-
-nav .brand {
+/*******************************************************************************************************/
+/* Page styles */
+nav a {
     font-size: 1.3rem;
 }
 
-nav .settingsIcon {
-    font-size: 20px;
-    align-self: flex-end;
-    justify-self: center;
-    margin-left: auto;
+/*******************************************************************************************************/
+/* Logo Section styling */
+#logo .primary {
+    font-family: 'Varela Round', sans-serif;
+}
+
+#logo .secondary {
+    font-size: 0.75rem;
+}
+
+/*******************************************************************************************************/
+/* Controller section styling */
+#controller {
+    border-radius: 15px;
+}
+
+#controller-main-text {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+#controller-secondary-text {
+    font-size: 0.8rem;
+}
+
+/*******************************************************************************************************/
+/* Switch section styling */
+#switch {
+    background-color: var(--switchBgColor);
+    width: 90%;
+}
+
+#switch-toggler {
+    background-color: var(--primaryColor);
+    height: 75px;
+    width: 75px;
+    font-size: 1.75rem;
+    border-radius: 50%;
+    border: 7px solid var(--secondaryColor);
+    cursor: pointer;
+    left: 0;
+    transition: left var(--toggleTransitionTime), background-color var(--toggleTransitionTime) ease-in-out, border-color var(--toggleTransitionTime) ease-in-out;
+}
+
+.arrow-top, .arrow-bottom {
+    content: '';
+    width: 25px;
+    height: 6px;
+    top: 20px;
+    left: 20px;
+    box-shadow: 0 0 8px white;
+}
+
+.arrow-top {
+    transform: rotate(45deg);
+    transition: left var(--toggleTransitionTime), transform var(--toggleTransitionTime);
+}
+
+.arrow-bottom {
+    transform: rotate(-45deg);
+    top: 34px;
+    transition: left var(--toggleTransitionTime), transform var(--toggleTransitionTime);
+}
+
+.arrow-top.transform, .arrow-bottom.transform {
+    left: 14px;
+}
+
+.arrow-top.transform {
+    transform: rotate(135deg);
+    transition: left var(--toggleTransitionTime), transform var(--toggleTransitionTime);
+}
+
+.arrow-bottom.transform {
+    transform: rotate(-135deg);
+    transition: left var(--toggleTransitionTime), transform var(--toggleTransitionTime);
+
+}
+
+/************************************************************************/
+/* Site info section styling */
+#site-info {
+    border: 1px solid var(--borderLightColor);
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.9rem;
 }

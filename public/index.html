@@ -3,10 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dist/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Varela+Round&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="dist/css/styles.css">
     <title>Document</title>
 </head>
 <body>
+    <div id="home" class="p-4 bg-white d-flex flex-column justify-content-between">
+        <nav class="d-flex flex-row-reverse justify-content-between">
+            <a href="#" class="text-secondary"><i class="fa fa-cog" aria-hidden="true"></i></a>
+        </nav>
 
+        <div id="logo" class="text-center">
+            <img id="icon" src="assets/icons/icon64.png" alt="logo">
+
+            <p class="primary h3 mt-3 mb-1">Ultra<strong>block</strong></p>
+
+            <p class="secondary text-secondary">The Ultimate AdBlocker</p>
+        </div>
+
+        <div id="controller" class="card shadow bg-white border border-white d-flex flex-column p-3">
+            <div id="switch" class="rounded-pill d-flex position-relative m-auto">
+                <div id="switch-toggler" class="position-relative">
+                    <div class="arrow-top position-absolute bg-white"></div>
+                    <div class="arrow-bottom position-absolute bg-white"></div>
+                </div>
+
+                <div class="text-dark pl-3 text-justify d-flex flex-column justify-content-between py-3">
+                    <p id="controller-main-text" class="mb-0">Disable</p>
+
+                    <p id="controller-secondary-text" class="mb-0 text-secondary">Don't block</p>
+                </div>
+            </div>
+
+            <div id="site-info" class="justify-content-between p-3 mt-3 mb-2 ml-3 mr-3">
+                <p id="info-top">Protection is enabled</p>
+                <p id="info-bottom" class="mb-0 text-center text-secondary"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="dist/js/script.js"></script>
 </body>
 </html>

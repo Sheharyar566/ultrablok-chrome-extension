@@ -45,7 +45,16 @@ let urlDictionary = new Map();
 /******************************************************************************************************************** */
 /************************************************* Several other url lists ****************************************** */
 /* Creating a whitelist for the pages that are allowed by the user to show ads */
-let whitelist = [];
+let whitelistedSites = [];
+/* Getting the whitelisted sites from the whitelist everytime chrome starts */
+chrome.storage.local.get((items) => {
+    /* Storing the data from storage in a variable */
+    let storedWhitelist = items.ultrablock_whitelist;
+    /* Since it will be undefined on the first run, we need to check for undefined */
+    if (storedWhitelist !== undefined) {
+        whitelistedSites = storedWhitelist;
+    }
+});
 /******************************************************************************************************************** */
 /************************************************ Respective event listeners **************************************** */
 /* Setting up an event listener before a request is initiated */
@@ -53,7 +62,7 @@ let whitelist = [];
 chrome.webRequest.onBeforeRequest.addListener((details) => {
     /* Check if the tab's url (not the ad's url) is present in the whitelist */
     /* If it is present, then stop the ad blocking process */
-    if (whitelist.includes(urlDictionary.get(details.tabId))) {
+    if (whitelistedSites.includes(urlDictionary.get(details.tabId))) {
         /* Returning a Blocking response object that sets cancel to true according to the urls list */
         /* False if don't wanna block */
         return { cancel: false };
@@ -96,7 +105,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         urlDictionary.set(tabId, domain);
         /* In case if the url is present in the whitelist (i.e. user disabled sites)*/
         /* Then change the icon to show the inactivity status */
-        if (whitelist.includes((_b = tab.url) === null || _b === void 0 ? void 0 : _b.split('/')[2])) {
+        if (whitelistedSites.includes((_b = tab.url) === null || _b === void 0 ? void 0 : _b.split('/')[2])) {
             /* Changing the browser action icon to inactive red style */
             chrome.browserAction.setIcon({
                 path: {
@@ -120,6 +129,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 }
             });
         }
+        /* Saving the active site to the local storage */
+        /* this makes it accessible to the extension scripts */
+        /* We could have used message passing, but that only works when */
+        /* the background script sends the message, however, that'd be an overkill */
+        /* And far more complex to manage */
+        /* Local storage, however, is far more manageable in this case */
+        chrome.storage.local.set({
+            "ultrablock_active_site": domain
+        });
     }
 });
 /* Deleting the tab's ad count entry in case if the tab is closed */
@@ -138,7 +156,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     let url = urlDictionary.get(activeInfo.tabId);
     /* In case if the url is present in the whitelist (i.e. user disabled sites)*/
     /* Then change the icon to show the inactivity status */
-    if (url && whitelist.includes(url)) {
+    if (url && whitelistedSites.includes(url)) {
         /* Changing the browser action icon to inactive red style */
         chrome.browserAction.setIcon({
             path: {
@@ -161,5 +179,30 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
                 "128": "../../assets/icons/icon128.png"
             }
         });
+    }
+    /* Saving the active site in local storage to make it accessible */
+    chrome.storage.local.set({
+        "ultrablock_active_site": url
+    });
+});
+/* Checking if the extension has just been installed, or updated */
+/* Cause we need to initiate an empty whitelist in the chrome's local storage */
+chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === 'install') {
+        chrome.storage.local.set({
+            'ultrablock_whitelist': []
+        }, () => {
+            console.log('Empty whitelist initialized!');
+        });
+    }
+});
+/* Checking if the whitelisted sites in chrome has been updated */
+/* This listener tracks the event related chrome.storage events */
+chrome.storage.onChanged.addListener((changes, areaName) => {
+    /* Since it returns a change object, which contains the changed data */
+    /* Check if the key that got changed really was the whitelist */
+    if (changes.ultrablock_whitelist !== undefined) {
+        /* Store the new value to the whitelisted sites */
+        whitelistedSites = changes.ultrablock_whitelist.newValue;
     }
 });
