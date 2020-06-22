@@ -27,6 +27,21 @@ let urlFilters: chrome.webRequest.RequestFilter = {
         '*://*.casalemedia.com/*',
         '*://*.advertising.com/*',
         '*://*.moatads.com/*',
+        '*://ads.videoadex.com/*',
+        '*://*.stickyadstv.com/*',
+        '*://cdn.taboola.com/*',
+        '*://*.g.doubleclick.net/*',
+        '*://*.youtube.com/pagead/*',
+        '*://*.youtube.com/api/stats/ads?*',
+        '*://*.googleadservices.com/pagead/*',
+        '*://*.google.com/pagead/*',
+        '*://*.google.com.pk/pagead/*',
+        '*://jsc.adskeeper.co.uk/*',
+        '*://st.bebi.com/*',
+        '*://contextual.media.net/*',
+        '*://inabsolor.com/*',
+        '*://inpagepush.com/*',
+        '*://pushsar.com/*'
     ]
 };
 
@@ -36,6 +51,11 @@ let urlFilters: chrome.webRequest.RequestFilter = {
 let extraInfo: string[] = [
     'blocking'
 ]
+
+/* Setting the background color for the extensions badge color */
+chrome.browserAction.setBadgeBackgroundColor({
+    color: [255, 140, 140, 1]
+})
 
 /******************************************************************************************************************** */
 /*********************************************** Dictionaries to keep track of data ********************************* */

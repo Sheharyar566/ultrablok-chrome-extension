@@ -1,7 +1,7 @@
 {
-  "name": "ultra-adblocker",
+  "name": "ultrablok",
   "version": "1.0.0",
-  "description": "The ultra adblocker chrome extension",
+  "description": "The ultimate adblocker for chrome",
   "main": "src/main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

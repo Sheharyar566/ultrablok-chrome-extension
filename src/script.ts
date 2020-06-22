@@ -90,11 +90,11 @@ const render = (): void => {
     let arrowBottom: HTMLDivElement = document.querySelector('.arrow-bottom') as HTMLDivElement;
     let controllerPrimaryText: HTMLParagraphElement = document.querySelector('#controller-main-text') as HTMLParagraphElement;
     let controllerSecondaryText: HTMLParagraphElement = document.querySelector('#controller-secondary-text') as HTMLParagraphElement;
-    let infoTop: HTMLParagraphElement = document.querySelector('#info-top') as HTMLParagraphElement;
-    let infoBottom: HTMLParagraphElement = document.querySelector('#info-bottom') as HTMLParagraphElement;
+    let siteInfoTop: HTMLParagraphElement = document.querySelector('#site-info-top') as HTMLParagraphElement;
+    let siteInfoBottom: HTMLParagraphElement = document.querySelector('#site-info-bottom') as HTMLParagraphElement;
     
     /* Showing the data from the local storage in the controller section */
-    infoBottom.innerText = ultrablock_active_site;
+    siteInfoBottom.innerText = ultrablock_active_site;
 
     /* In case if the button was clicked, then disable the adblocker */
     if(isWhitelisted) {
@@ -113,7 +113,7 @@ const render = (): void => {
         controllerSecondaryText.innerText = 'Block ads';
         
         /* Changing the info section's text */
-        infoTop.innerText = 'Protection is disabled';
+        siteInfoTop.innerText = 'Protection is disabled';
         
         /* Also animating the arrow icon */
         arrowTop.classList.add('transform');
@@ -139,7 +139,7 @@ const render = (): void => {
         arrowBottom.classList.remove('transform');
         
         /* Changing the info section's text */
-        infoTop.innerText = 'Protection is enabled';
+        siteInfoTop.innerText = 'Protection is enabled';
         
         /* Change the logo to aqua */
         icon.src = 'assets/icons/icon64.png';

@@ -77,10 +77,10 @@ const render = () => {
     let arrowBottom = document.querySelector('.arrow-bottom');
     let controllerPrimaryText = document.querySelector('#controller-main-text');
     let controllerSecondaryText = document.querySelector('#controller-secondary-text');
-    let infoTop = document.querySelector('#info-top');
-    let infoBottom = document.querySelector('#info-bottom');
+    let siteInfoTop = document.querySelector('#site-info-top');
+    let siteInfoBottom = document.querySelector('#site-info-bottom');
     /* Showing the data from the local storage in the controller section */
-    infoBottom.innerText = ultrablock_active_site;
+    siteInfoBottom.innerText = ultrablock_active_site;
     /* In case if the button was clicked, then disable the adblocker */
     if (isWhitelisted) {
         /* change the background and border color of toggle switch */
@@ -95,7 +95,7 @@ const render = () => {
         controllerPrimaryText.innerText = 'Enable';
         controllerSecondaryText.innerText = 'Block ads';
         /* Changing the info section's text */
-        infoTop.innerText = 'Protection is disabled';
+        siteInfoTop.innerText = 'Protection is disabled';
         /* Also animating the arrow icon */
         arrowTop.classList.add('transform');
         arrowBottom.classList.add('transform');
@@ -116,7 +116,7 @@ const render = () => {
         arrowTop.classList.remove('transform');
         arrowBottom.classList.remove('transform');
         /* Changing the info section's text */
-        infoTop.innerText = 'Protection is enabled';
+        siteInfoTop.innerText = 'Protection is enabled';
         /* Change the logo to aqua */
         icon.src = 'assets/icons/icon64.png';
     }

@@ -16,6 +16,8 @@
     --inactiveSecondaryColor: rgb(238, 61, 51);
     --inactiveSwitchBgColor: rgb(252, 56, 56, 0.1);
 
+    --shadowColor: rgba(150, 150, 150, 0.6);
+
     --borderLightColor: rgba(150, 150, 150, 0.2);
 
     --toggleTransitionTime: 0.9s;
@@ -57,6 +59,7 @@ nav a {
 /* Controller section styling */
 #controller {
     border-radius: 15px;
+    box-shadow: 0px 0px 10px var(--shadowColor);
 }
 
 #controller-main-text {
